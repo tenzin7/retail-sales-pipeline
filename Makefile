@@ -1,4 +1,4 @@
-.PHONY: up down psql sftp seed migrate dates test run backfill clean
+.PHONY: up down psql sftp seed migrate dates test run backfill cron-install cron-remove clean
 
 up:
 	docker compose up -d
@@ -44,6 +44,18 @@ run:
 backfill:
 	@test -n "$(FROM)" || (echo "Usage: make backfill FROM=YYYY-MM-DD [TO=YYYY-MM-DD]" && exit 1)
 	python -m src.main --backfill-from $(FROM) $(if $(TO),--backfill-to $(TO),)
+
+# Install cron job to run pipeline daily at 2 AM
+cron-install:
+	@SCRIPT="$(shell pwd)/scripts/run_pipeline.sh"; \
+	ENTRY="0 2 * * * $$SCRIPT"; \
+	( crontab -l 2>/dev/null | grep -v "run_pipeline.sh"; echo "$$ENTRY" ) | crontab -; \
+	echo "Installed: $$ENTRY"
+
+# Remove the pipeline cron job
+cron-remove:
+	crontab -l 2>/dev/null | grep -v "run_pipeline.sh" | crontab -
+	@echo "Removed pipeline cron job."
 
 clean:
 	docker compose down -v
