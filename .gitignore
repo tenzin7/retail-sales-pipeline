@@ -1,0 +1,36 @@
+# Secrets — never commit
+.env
+
+# Internal planning files
+CLAUDE.md
+PHASE_1_PROMPT.md
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Runtime data (downloaded CSVs land here)
+data/
+
+# Logs (generated at runtime)
+logs/*.log
+logs/cron.log
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

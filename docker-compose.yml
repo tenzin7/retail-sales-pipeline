@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: retail_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-retail}
+      POSTGRES_USER: ${POSTGRES_USER:-retail}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-retail}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-retail} -d ${POSTGRES_DB:-retail}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sftp:
+    image: atmoz/sftp:alpine
+    container_name: retail_sftp
+    command: "${SFTP_USER:-retail}:${SFTP_PASSWORD:-retail}:1001:1001:incoming"
+    ports:
+      - "${SFTP_PORT:-2222}:22"
+    # No volume: SFTP is a mock — seed script re-uploads on every run, persistence not needed
+
+volumes:
+  postgres_data:
